@@ -1,8 +1,8 @@
 export const keyValidator = (setJsonVal) => ({
   validator(_, value) {
-    if (value?.length !== 44) {
-      return Promise.reject(new Error(`Invalid key length! Is ${value?.length}, should be 44.`));
-    }
+    // if (value?.length !== 44) {
+    //   return Promise.reject(new Error(`Invalid key length! Is ${value?.length}, should be 44.`));
+    // }
     setJsonVal(value);
     return Promise.resolve(value);
   },
