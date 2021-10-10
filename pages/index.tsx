@@ -8,9 +8,13 @@ import { GibMeta } from "../components/gib-meta";
 import styles from "../styles/Home.module.css";
 import { ENDPOINTS } from "../util/endpoints";
 import ARUpload from "../components/upload-arweave";
+import dynamic from "next/dynamic";
 
 const { Option } = Select;
-
+const DynamicComponentWithNoSSR = dynamic(
+  () => import('../components/gib-nft'),
+  { ssr: false }
+)
 export default function Home() {
   const router = useRouter();
   const rightMenuRef = useRef();
@@ -118,6 +122,8 @@ export default function Home() {
             )}
             {selectedKeys[0] === "mints" && <GibMints endpoint={endpoint} />}
             {selectedKeys[0] === "ar-links" && <ARUpload />}
+            {selectedKeys[0] === "nft" && <DynamicComponentWithNoSSR endpoint={endpoint} />}
+
           </div>
         </main>
         <footer className={styles.footer}>
