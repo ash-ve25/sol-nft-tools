@@ -78,11 +78,6 @@ export default function Home() {
             src="/logo-horizontal-gradient-dark.svg"
             alt="Solana Logo"
             className={styles["sol-logo"]}
-            style={
-              {
-                // width:
-              }
-            }
           />
         </Menu.Item>
 
@@ -102,6 +97,9 @@ export default function Home() {
         >
           Gib AR-Links (Beta)
         </Menu.Item>
+        <Menu.Item onClick={() => setRoute("nft")}  style={{marginRight: 'auto'}} key="nft">
+          Gib NFTs
+        </Menu.Item>
 
         <Menu.Item>
           <div ref={rightMenuRef}>
@@ -116,14 +114,11 @@ export default function Home() {
           >{`GIB ${selectedKeys[0].toUpperCase()}!`}</h2>
           <div className={styles["inner-container"]}>
             <Divider />
-            {selectedKeys[0] === "meta" && <GibMeta endpoint={endpoint} />}
-            {selectedKeys[0] === "holders" && (
-              <GibHolders endpoint={endpoint} />
-            )}
-            {selectedKeys[0] === "mints" && <GibMints endpoint={endpoint} />}
-            {selectedKeys[0] === "ar-links" && <ARUpload />}
-            {selectedKeys[0] === "nft" && <DynamicComponentWithNoSSR endpoint={endpoint} />}
 
+            {selectedKeys[0] === 'nft' && <DynamicComponentWithNoSSR endpoint={endpoint} />}
+            {selectedKeys[0] === "meta" && <GibMeta endpoint={endpoint} />}
+            {selectedKeys[0] === "holders" && <GibHolders endpoint={endpoint} />}
+            {selectedKeys[0] === "mints" && <GibMints endpoint={endpoint} />}
           </div>
         </main>
         <footer className={styles.footer}>
