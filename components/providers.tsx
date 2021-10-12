@@ -16,9 +16,9 @@ export default function Providers({ children }) {
   const wallets = useMemo(
     () => [
       getPhantomWallet(),
-      getSolflareWallet(),
       getLedgerWallet(),
       getSolletWallet(),
+      getSolflareWallet(),
     ],
     []
   );
