@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { DownloadOutlined } from '@ant-design/icons';
-import { Divider, Form, Button, Input, notification } from 'antd';
-import { jsonValidator } from '../util/validators';
+import React, { useState } from "react";
+import { DownloadOutlined } from "@ant-design/icons";
+import { Divider, Form, Button, Input, notification } from "antd";
+import { jsonValidator } from "../util/validators";
 import styles from "../styles/Home.module.css";
-import { getMeta } from '../util/get-meta';
+import { getMeta } from "../util/get-meta";
 
 const { TextArea } = Input;
 
-export const GibMeta = ({endpoint}) => {
+export const GibMeta = ({ endpoint }) => {
   const [form] = Form.useForm();
   const [jsonVal, setJsonVal] = useState(undefined);
   const [loading, setLoading] = useState(false);
@@ -58,10 +58,7 @@ export const GibMeta = ({endpoint}) => {
         <label style={{ marginBottom: "2rem" }}>
           Please gib SOL mint IDs as JSON array to get their metadata
         </label>
-        <Form.Item
-          name="mintIds"
-          rules={[ jsonValidator(setJsonVal) ]}
-        >
+        <Form.Item name="mintIds" rules={[jsonValidator(setJsonVal)]}>
           <TextArea
             rows={4}
             className={`${styles.card} ${styles["full-width"]}`}

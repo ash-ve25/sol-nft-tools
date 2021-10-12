@@ -119,10 +119,10 @@ export class AuctionManager {
       this.instance.info.key == MetaplexKey.AuctionManagerV2
         ? new BN(args.vault.info.tokenTypeCount)
         : new BN(
-            (
-              this.instance.info as AuctionManagerV1
-            ).state.winningConfigItemsValidated,
-          );
+          (
+            this.instance.info as AuctionManagerV1
+          ).state.winningConfigItemsValidated,
+        );
     this.store = this.instance.info.store;
     this.authority = this.instance.info.authority;
     this.vault = this.instance.info.vault;
@@ -134,19 +134,19 @@ export class AuctionManager {
     this.participationConfig =
       this.instance.info.key == MetaplexKey.AuctionManagerV2
         ? this.safetyDepositConfigs
-            ?.filter(s => s.info.participationConfig)
-            .map(s => ({
-              winnerConstraint:
-                s.info.participationConfig?.winnerConstraint ||
-                WinningConstraint.NoParticipationPrize,
-              nonWinningConstraint:
-                s.info.participationConfig?.nonWinningConstraint ||
-                NonWinningConstraint.GivenForFixedPrice,
-              fixedPrice: s.info.participationConfig?.fixedPrice || null,
-              safetyDepositBoxIndex: s.info.order.toNumber(),
-            }))[0] || undefined
+          ?.filter(s => s.info.participationConfig)
+          .map(s => ({
+            winnerConstraint:
+              s.info.participationConfig?.winnerConstraint ||
+              WinningConstraint.NoParticipationPrize,
+            nonWinningConstraint:
+              s.info.participationConfig?.nonWinningConstraint ||
+              NonWinningConstraint.GivenForFixedPrice,
+            fixedPrice: s.info.participationConfig?.fixedPrice || null,
+            safetyDepositBoxIndex: s.info.order.toNumber(),
+          }))[0] || undefined
         : (this.instance.info as AuctionManagerV1).settings
-            .participationConfig || undefined;
+          .participationConfig || undefined;
   }
 
   isItemClaimed(winnerIndex: number, safetyDepositBoxIndex: number): boolean {
@@ -209,7 +209,7 @@ export class AuctionManager {
             // Means is a limited edition v1, so the tokenMint is the printingMint
             const masterEdition =
               masterEditionsByPrintingMint[
-                boxes[it.safetyDepositBoxIndex]?.info.tokenMint
+              boxes[it.safetyDepositBoxIndex]?.info.tokenMint
               ];
             if (masterEdition) {
               metadata = metadataByMasterEdition[masterEdition.pubkey];
@@ -495,9 +495,9 @@ export const decodeBidRedemptionTicket = (buffer: Buffer) => {
     buffer[0] == MetaplexKey.BidRedemptionTicketV1
       ? deserializeUnchecked(SCHEMA, BidRedemptionTicketV1, buffer)
       : new BidRedemptionTicketV2({
-          key: MetaplexKey.BidRedemptionTicketV2,
-          data: buffer.toJSON().data,
-        })
+        key: MetaplexKey.BidRedemptionTicketV2,
+        data: buffer.toJSON().data,
+      })
   ) as BidRedemptionTicket;
 };
 

@@ -49,8 +49,8 @@ export function fromUTF8Array(data: number[]) {
     } else if (value > 0xdf && value < 0xf0) {
       str += String.fromCharCode(
         ((value & 0x0f) << 12) |
-          ((data[i + 1] & 0x3f) << 6) |
-          (data[i + 2] & 0x3f),
+        ((data[i + 1] & 0x3f) << 6) |
+        (data[i + 2] & 0x3f),
       );
       i += 2;
     } else {

@@ -572,7 +572,7 @@ export async function createMetadata(
   )[0];
   console.log('Data', data);
   const value = new CreateMetadataArgs({ data, isMutable: true });
-  console.log({value})
+  console.log({ value })
   const txnData = Buffer.from(serialize(METADATA_SCHEMA, value));
 
   const keys = [

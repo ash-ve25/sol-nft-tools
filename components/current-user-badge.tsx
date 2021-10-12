@@ -1,10 +1,10 @@
-import React from 'react';
-import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { useNativeAccount } from '../contexts/accounts/';
-import { formatNumber } from '../utils';
-import { Popover } from 'antd';
-import { Settings } from './settings';
+import React from "react";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useNativeAccount } from "../contexts/accounts/";
+import { formatNumber, shortenAddress } from "../utils";
+import { Popover } from "antd";
+import { Settings } from "./settings";
 
 export const CurrentUserBadge = (props: {
   showBalance?: boolean;
@@ -20,13 +20,13 @@ export const CurrentUserBadge = (props: {
 
   const iconStyle: React.CSSProperties = props.showAddress
     ? {
-        marginLeft: '0.5rem',
-        display: 'flex',
+        marginLeft: "0.5rem",
+        display: "flex",
         width: props.iconSize || 20,
         borderRadius: 50,
       }
     : {
-        display: 'flex',
+        display: "flex",
         width: props.iconSize || 20,
         paddingLeft: 0,
         borderRadius: 50,
@@ -34,8 +34,11 @@ export const CurrentUserBadge = (props: {
 
   const baseWalletKey: React.CSSProperties = {
     height: props.iconSize,
-    cursor: 'pointer',
-    userSelect: 'none',
+    cursor: "pointer",
+    userSelect: "none",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   };
   const walletKeyStyle: React.CSSProperties = props.showAddress
     ? baseWalletKey
@@ -43,9 +46,16 @@ export const CurrentUserBadge = (props: {
 
   return (
     <div className="wallet-wrapper">
+      {props.showAddress && (
+        <span style={{ marginRight: "1rem" }}>
+          {shortenAddress(publicKey.toBase58())}
+        </span>
+      )}
       {props.showBalance && (
-        <span>
-          {formatNumber.format((account?.lamports || 0) / LAMPORTS_PER_SOL)} SOL
+        <span style={{ marginRight: "1rem" }}>
+          {`${formatNumber.format(
+            (account?.lamports || 0) / LAMPORTS_PER_SOL
+          )} SOL`}
         </span>
       )}
 
@@ -56,7 +66,7 @@ export const CurrentUserBadge = (props: {
         trigger="click"
       >
         <div className="wallet-key" style={walletKeyStyle}>
-          <span style={{ marginRight: '0.5rem' }}>{wallet.name}</span>
+          <span style={{ marginRight: "0.5rem" }}>{wallet.name}</span>
           <img src={wallet.icon} style={iconStyle} />
         </div>
       </Popover>

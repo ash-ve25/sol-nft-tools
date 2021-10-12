@@ -1,9 +1,8 @@
-import { Button, Dropdown, Menu } from 'antd';
-import { ButtonProps } from 'antd/lib/button';
-import React, { useCallback } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { useWalletModal } from '../contexts';
-
+import { Button, Dropdown, Menu } from "antd";
+import { ButtonProps } from "antd/lib/button";
+import React, { useCallback } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "../contexts";
 
 export interface ConnectButtonProps
   extends ButtonProps,
@@ -18,17 +17,16 @@ export const ConnectButton = (props: ConnectButtonProps) => {
   const { setVisible } = useWalletModal();
   const open = useCallback(() => setVisible(true), [setVisible]);
 
-  const handleClick = useCallback(
-    () => (wallet ? connect().catch(() => {}) : open()),
-    [wallet, connect, open],
-  );
+  const handleClick = useCallback(() => {
+    return wallet ? connect().catch(() => {}) : open();
+  }, [wallet, connect, open]);
 
   // only show if wallet selected or user connected
 
   if (!wallet || !allowWalletChange) {
     return (
       <Button {...rest} onClick={handleClick} disabled={connected && disabled}>
-        {connected ? children : 'Connect'}
+        {connected ? children : "Connect"}
       </Button>
     );
   }

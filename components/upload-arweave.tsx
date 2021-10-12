@@ -130,7 +130,10 @@ export default function ARUpload() {
       </p>
       <p>
         Send some AR to this wallet to start uploading. You can download and
-        empty the wallet later. You can get AR on <a href="https://binance.com" target="_blank" rel="noopener noreferrer">Binance</a>
+        empty the wallet later. You can get AR on{" "}
+        <a href="https://binance.com" target="_blank" rel="noopener noreferrer">
+          Binance
+        </a>
       </p>
       <Divider />
 

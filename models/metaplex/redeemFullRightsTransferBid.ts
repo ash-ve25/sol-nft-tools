@@ -75,9 +75,9 @@ export async function redeemFullRightsTransferBid(
   const value =
     auctioneerReclaimIndex !== undefined
       ? new RedeemUnusedWinningConfigItemsAsAuctioneerArgs({
-          winningConfigItemIndex: auctioneerReclaimIndex,
-          proxyCall: ProxyCallAddress.RedeemFullRightsTransferBid,
-        })
+        winningConfigItemIndex: auctioneerReclaimIndex,
+        proxyCall: ProxyCallAddress.RedeemFullRightsTransferBid,
+      })
       : new RedeemFullRightsTransferBidArgs();
   const data = Buffer.from(serialize(SCHEMA, value));
   const keys = [

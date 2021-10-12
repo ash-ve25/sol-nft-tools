@@ -25,13 +25,14 @@ export default function Home() {
 
   const endpoint = "https://api.metaplex.solana.com";
 
-  console.log(selectedKeys)
+  console.log(selectedKeys);
 
   return (
     <div className={styles.container}>
       <main className={styles.main}>
-        <h2 className={styles.title}>{`GIB ${selectedKeys && selectedKeys[0].toUpperCase()
-          }!`}</h2>
+        <h2 className={styles.title}>{`GIB ${
+          selectedKeys && selectedKeys[0].toUpperCase()
+        }!`}</h2>
         <div className={styles["inner-container"]}>
           <Divider />
 
@@ -53,7 +54,7 @@ export default function Home() {
         <span style={{ width: "100%" }}>
           <span>
             Made by
-              <a
+            <a
               style={{ display: "block" }}
               target="_blank"
               rel="noreferrer"
@@ -110,7 +111,7 @@ export default function Home() {
             className={styles["cursor-pointer"]}
           >
             DSmbnj9t7CCQdAZfvYe3PNbJB7CrVXpa29iW3VkgpEEZ
-            </span>
+          </span>
         </span>
       </footer>
     </div>

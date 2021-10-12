@@ -19,18 +19,46 @@ a {
   padding: 16px;
 }
 .avatar-uploader > .ant-upload {
-  width: 128px;
-  height: 128px;
+  width: 500px;
+  height: 500px;
 }
 
 .avatar-uploader {
   text-align: center;
 }
 
-.ant-scrolling-effect  #root>.ant-layout {
+.ant-scrolling-effect #root > .ant-layout {
   filter: blur(10px) brightness(0.5);
 }
 
 .ant-modal-content {
   border-radius: 16px;
+}
+
+.wallet-key {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.wallet-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  min-width: 250px;
+}
+.dynamic-delete-button {
+  position: relative;
+  top: 4px;
+  margin: 0 8px;
+  color: #999;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.dynamic-delete-button:hover {
+  color: #777;
+}
+.dynamic-delete-button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
 }

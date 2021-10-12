@@ -1,8 +1,8 @@
-import { WalletAdapter, WalletError } from '@solana/wallet-adapter-base';
+import { WalletAdapter, WalletError } from "@solana/wallet-adapter-base";
 import {
   useWallet,
   WalletProvider as BaseWalletProvider,
-} from '@solana/wallet-adapter-react';
+} from "@solana/wallet-adapter-react";
 import {
   getLedgerWallet,
   getMathWallet,
@@ -12,8 +12,8 @@ import {
   getSolongWallet,
   getTorusWallet,
   WalletName,
-} from '@solana/wallet-adapter-wallets';
-import { Button } from 'antd';
+} from "@solana/wallet-adapter-wallets";
+import { Button } from "antd";
 import React, {
   createContext,
   FC,
@@ -23,9 +23,9 @@ import React, {
   useEffect,
   useMemo,
   useState,
-} from 'react';
-import { notify } from '../utils';
-import { MetaplexModal } from '../components/metaplex-modal';
+} from "react";
+import { notify } from "../utils";
+import { MetaplexModal } from "../components/metaplex-modal";
 
 export interface WalletModalContextState {
   visible: boolean;
@@ -33,7 +33,7 @@ export interface WalletModalContextState {
 }
 
 export const WalletModalContext = createContext<WalletModalContextState>(
-  {} as WalletModalContextState,
+  {} as WalletModalContextState
 );
 
 export function useWalletModal(): WalletModalContextState {
@@ -51,39 +51,17 @@ export const WalletModal: FC = () => {
 
   return (
     <MetaplexModal visible={visible} onCancel={close}>
-      <div
-        style={{
-          background:
-            'linear-gradient(180deg, #D329FC 0%, #8F6DDE 49.48%, #19E6AD 100%)',
-          borderRadius: 36,
-          width: 50,
-          height: 50,
-          textAlign: 'center',
-          verticalAlign: 'middle',
-          fontWeight: 700,
-          fontSize: '1.3rem',
-          lineHeight: 2.4,
-          marginBottom: 10,
-        }}
-      >
-        M
-      </div>
-
-      <h2>{selected ? 'Change provider' : 'Welcome to Metaplex'}</h2>
-      <p>
-        {selected
-          ? 'Feel free to switch wallet provider'
-          : 'You must be signed in to place a bid'}
-      </p>
+      <h2>{selected ? "Change provider" : "Welcome to SOL NFT Tools"}</h2>
+      <p>{selected ? "Feel free to switch wallet provider" : ""}</p>
 
       <br />
       {selected || showWallets ? (
-        wallets.map(wallet => {
+        wallets.map((wallet) => {
           return (
             <Button
               key={wallet.name}
               size="large"
-              type={wallet === selected ? 'primary' : 'ghost'}
+              type={wallet === selected ? "primary" : "ghost"}
               onClick={() => {
                 select(wallet.name);
                 close();
@@ -99,9 +77,9 @@ export const WalletModal: FC = () => {
                 />
               }
               style={{
-                display: 'block',
-                width: '100%',
-                textAlign: 'left',
+                display: "block",
+                width: "100%",
+                textAlign: "left",
                 marginBottom: 8,
               }}
             >
@@ -114,8 +92,8 @@ export const WalletModal: FC = () => {
           <Button
             className="metaplex-button"
             style={{
-              width: '80%',
-              fontWeight: 'unset',
+              width: "80%",
+              fontWeight: "unset",
             }}
             onClick={() => {
               select(WalletName.Phantom);
@@ -126,15 +104,14 @@ export const WalletModal: FC = () => {
               {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
               <img
                 src="https://www.phantom.app/img/logo.png"
-                style={{ width: '1.2rem' }}
+                style={{ width: "1.2rem" }}
               />
               &nbsp;Sign in with Phantom
             </span>
-            <span>&gt;</span>
           </Button>
           <p
             onClick={() => setShowWallets(true)}
-            style={{ cursor: 'pointer', marginTop: 10 }}
+            style={{ cursor: "pointer", marginTop: 10 }}
           >
             Select a different Solana wallet
           </p>
@@ -158,13 +135,13 @@ export const WalletModalProvider: FC<{ children: ReactNode }> = ({
         base58.length > 20
           ? `${base58.substring(0, 7)}.....${base58.substring(
               base58.length - 7,
-              base58.length,
+              base58.length
             )}`
           : base58;
 
       notify({
-        message: 'Wallet update',
-        description: 'Connected to wallet ' + keyToDisplay,
+        message: "Wallet update",
+        description: "Connected to wallet " + keyToDisplay,
       });
     }
   }, [publicKey]);
@@ -172,8 +149,8 @@ export const WalletModalProvider: FC<{ children: ReactNode }> = ({
   useEffect(() => {
     if (!publicKey && connected) {
       notify({
-        message: 'Wallet update',
-        description: 'Disconnected from wallet',
+        message: "Wallet update",
+        description: "Disconnected from wallet",
       });
     }
     setConnected(!!publicKey);
@@ -201,7 +178,7 @@ export const WalletProvider: FC<{ children: ReactNode }> = ({ children }) => {
         options: {
           // @FIXME: this should be changed for Metaplex, and by each Metaplex storefront
           clientId:
-            'BOM5Cl7PXgE9Ylq1Z1tqzhpydY0RVr8k90QQ85N7AKI5QGSrr9iDC-3rvmy0K_hF0JfpLMiXoDhta68JwcxS1LQ',
+            "BOM5Cl7PXgE9Ylq1Z1tqzhpydY0RVr8k90QQ85N7AKI5QGSrr9iDC-3rvmy0K_hF0JfpLMiXoDhta68JwcxS1LQ",
         },
       }),
       getLedgerWallet(),
@@ -209,13 +186,13 @@ export const WalletProvider: FC<{ children: ReactNode }> = ({ children }) => {
       getMathWallet(),
       getSolletWallet(),
     ],
-    [],
+    []
   );
 
   const onError = useCallback((error: WalletError) => {
     console.error(error);
     notify({
-      message: 'Wallet error',
+      message: "Wallet error",
       description: error.message,
     });
   }, []);
@@ -229,5 +206,5 @@ export const WalletProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
 export type WalletSigner = Pick<
   WalletAdapter,
-  'publicKey' | 'signTransaction' | 'signAllTransactions'
+  "publicKey" | "signTransaction" | "signAllTransactions"
 >;

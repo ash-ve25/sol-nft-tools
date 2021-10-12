@@ -1,8 +1,5 @@
 import React, { useState } from "react";
-import {
-  LoadingOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { Upload } from "antd";
 
 function getBase64(img, callback) {
@@ -11,7 +8,7 @@ function getBase64(img, callback) {
   reader.readAsDataURL(img);
 }
 
-export function Avatar({setFile}) {
+export function Avatar({ setFile }) {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
 

@@ -1,4 +1,3 @@
-
 import { WalletProvider } from "../contexts/wallet";
 import { AccountsProvider } from "../contexts/accounts/accounts";
 import { ConnectionProvider } from "../contexts";
