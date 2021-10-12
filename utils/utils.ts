@@ -27,27 +27,7 @@ export function useLocalStorageState(key: string, defaultState?: string) {
     return defaultState;
   });
 
-  const setLocalStorageState = useCallback(
-    newState => {
-      const changed = state !== newState;
-      if (!changed) {
-        return;
-      }
-      setState(newState);
-      if (newState === null) {
-        localStorage.removeItem(key);
-      } else {
-        try {
-          localStorage.setItem(key, JSON.stringify(newState));
-        } catch {
-          // ignore
-        }
-      }
-    },
-    [state, key],
-  );
-
-  return [state, setLocalStorageState];
+  return [state];
 }
 
 export const findProgramAddress = async (

@@ -1,4 +1,4 @@
-export * from './meta';
+
 export * from './isMetadataPartOfStore';
 export * from './loadAccounts';
 export * from './onChangeAccount';

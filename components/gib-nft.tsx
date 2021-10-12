@@ -1,124 +1,150 @@
-import { Button, Card, Divider, Form, Input, notification } from "antd";
+import { Button, Card, Divider, Form, Input } from "antd";
 import React, { useEffect, useState } from "react";
-import { jsonValidator } from "../util/validators";
 import styles from "../styles/Home.module.css";
 import { DownloadOutlined } from "@ant-design/icons";
-import { getHolders } from "../util/get-holders";
-import { Connection, Keypair } from "@solana/web3.js";
 import { mintNFT } from "../util/mint-nft";
-import { Wallet, web3 } from "@project-serum/anchor";
-const { TextArea } = Input;
+import { Avatar } from "./avatar";
+import { Creator } from "../actions";
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useConnection } from "../contexts/connection";
+
 export default function GibNFT({ endpoint }) {
   const [form] = Form.useForm();
-  const [counter, setCounter] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [jsonVal, setJsonVal] = useState(undefined);
-  const [connection, setConnection] = useState<Connection>();
-  const [wallet, setWallet] = useState<Wallet>();
+  const [creator, setCreator] = useState<Creator>();
+  const connection = useConnection();
+  const wallet = useWallet();
+  const [nftCreateProgress, setNFTcreateProgress] = useState<number>(0)
 
-  useEffect(() => {
-    if (endpoint) {
-      setConnection(new web3.Connection(endpoint));
-    }
-  }, [endpoint]);
-
-  useEffect(() => {
-    const cp = Keypair.fromSecretKey(new Uint8Array([137, 190, 254, 227, 164, 92, 163, 195, 204, 23, 11, 215, 12, 210, 208, 128, 43, 86, 228, 91, 13, 65, 147, 206, 101, 236, 47, 77, 179, 185, 17, 231, 82, 194, 235, 123, 151, 176, 171, 217, 198, 189, 178, 131, 32, 28, 251, 96, 167, 22, 148, 42, 100, 242, 254, 131, 234, 133, 239, 140, 124, 19, 244, 139]));
-    const w = new Wallet(cp);
-    console.log(w.publicKey)
-  }, []);
-
-  const mint = () => {
-    mintNFT(
+  const mint = async () => {
+    const { files, ...meta } = form.getFieldsValue();
+    console.log({ meta, files });
+    // return;
+    setLoading(true);
+    const res = await mintNFT(
       connection,
-      undefined,
+      wallet,
       endpoint,
-      [],
+      files,
       {
-        name: 'foo',
-        symbol: '',
-        creators: null,
-        animation_url: '',
-        description: 'bar',
-        image: '',
-        attributes: [],
-        external_url: '',
-        properties: [],
-        sellerFeeBasisPoints: 100
-      }
+        name: meta.name || "",
+        symbol: meta.symbol || "",
+        creators: meta.creators || [
+          new Creator({
+            address: wallet.publicKey.toBase58(),
+            share: 100,
+            verified: true,
+          }),
+        ],
+        animation_url: meta.animation_url || "",
+        description: meta.description || "",
+        image: (files as File[])[0].name,
+        attributes: meta.attributes || [],
+        external_url: meta.external_url || [],
+        properties: {
+          files: [
+            {
+              uri: (files as File[])[0].name,
+              type: (files as File[])[0].type,
+            },
+          ],
+        },
+        sellerFeeBasisPoints: meta.attributes || 0,
+      },
+      setNFTcreateProgress,
+      1
     );
+    setLoading(false);
   };
 
+  const setFile = (file) => {
+    form.setFields([{ name: "files", value: [file] }]);
+  };
 
+  useEffect(() => {
+    if (wallet?.publicKey && !creator) {
+      const c = new Creator({
+        address: wallet.publicKey.toBase58(),
+        share: 100,
+        verified: true,
+      });
+      setCreator(c);
+      form.setFieldsValue({
+        sellerFeeBasisPoints: 0,
+        creators: [c],
+      });
+    }
+  }, [creator, wallet?.publicKey, form]);
+
+  const labelCol = { span: 5 };
+
+  const [, forceUpdate] = useState({});
+
+  // To disable submit button at the beginning.
+  useEffect(() => {
+    forceUpdate({});
+  }, []);
 
   return (
     <>
       <p>
-        Gib-NFT serves one purpose: To gib you NFT.
-        It will generate an NFT from your metadata.
+        Gib-NFT serves one purpose: To gib you NFT. It will generate an NFT from
+        your metadata.
       </p>
       <Divider />
-      {/* <DynamicComponentWithNoSSR/> */}
-      <Form
-        form={form}
-        name="mint-nft"
-        initialValues={{
-          files: [],
-          metadata: {
-            name: '',
-            symbol: '',
-            description: '',
-            animation_url: '',
-            attributes: [],
-            external_url: '',
-            properties: [],
-            creators: null,
-            sellerFeeBasisPoints: 0,
-          }
-        }}
-        scrollToFirstError
-        className={`${styles["full-width"]} ${styles["d-flex"]} ${styles["flex-col"]}`}
-      >
-        <label style={{ marginBottom: "2rem" }}>
-          Please gib NFT metadata to mint.
-        </label>
-        <Card>
+      <Card>
+        <Form
+          form={form}
+          name="mint-nft"
+          scrollToFirstError
+          labelCol={labelCol}
+          className={`${styles["full-width"]} ${styles["d-flex"]} ${styles["flex-col"]}`}
+        >
+          <label style={{ marginBottom: "2rem" }}>
+            Please gib NFT metadata to mint.
+          </label>
           <Form.Item
             name="name"
-            rules={[
-              // jsonValidator(setJsonVal)
-            ]}
+            label="Name"
+            rules={[{ required: true, message: "Please input a name!" }]}
           >
-            <Input name='name' placeholder="Name"/>
-            <br />
-            <br />
-            <Input name='symbol' placeholder="Symbol"/>
-            <br />
-            <br />
-            <Input name='description' placeholder="Description"/>
-            <br />
-            <br />
-            <Input name='animation_url' placeholder="Animation URL"/>
-            <br />
-            <br />
-            <Input name='external_url' placeholder="External URL"/>
+            <Input name="name" placeholder="Name" required />
           </Form.Item>
-        </Card>
-
-        <Button
-          type="primary"
-          loading={loading}
-          shape="round"
-          // disabled={!jsonVal || !jsonVal.length}
-          icon={<DownloadOutlined />}
-          size="large"
-          className={`${styles["d-block"]} ${styles["m-0-auto"]}`}
-          onClick={() => console.log(form.getFieldsValue())}
-        >
-          {loading ? `${counter} / ${jsonVal?.length}` : "Gib Holders!"}
-        </Button>
-      </Form>
+          <Form.Item name="symbol" label="Symbol">
+            <Input name="symbol" placeholder="Symbol" />
+          </Form.Item>
+          <Form.Item name="description" label="Description">
+            <Input name="description" placeholder="Description" />
+          </Form.Item>
+          <Form.Item name="external_url" label="External URL">
+            <Input name="external_url" placeholder="External URL" />
+          </Form.Item>
+          <Form.Item name="sellerFeeBasisPoints" label="Resale Fee">
+            <Input
+              name="sellerFeeBasisPoints"
+              placeholder="Resale Fee"
+              type="number"
+            />
+          </Form.Item>
+        </Form>
+        <Form form={form} name="files">
+          <Form.Item name="files">
+            <Avatar setFile={setFile} />
+          </Form.Item>
+        </Form>
+      </Card>
+      <Button
+        type="primary"
+        loading={loading}
+        shape="round"
+        icon={<DownloadOutlined />}
+        size="large"
+        className={`${styles["d-block"]} ${styles["m-0-auto"]}`}
+        onClick={() => mint()}
+        style={{ marginTop: "2rem" }}
+      >
+        {loading ? 'Create NFT' : nftCreateProgress}
+      </Button>
     </>
   );
-};
-
+}

@@ -15,8 +15,6 @@ import {
 } from '@solana/web3.js';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { notify } from '../utils/notifications';
-// import { ExplorerLink } from '../components/ExplorerLink';
-import { useQuerySearch } from '../hooks';
 import {
   TokenInfo,
   TokenListProvider,
@@ -42,7 +40,7 @@ export type ENV =
 export const ENDPOINTS = [
   {
     name: 'mainnet-beta' as ENV,
-    endpoint: 'https://api.metaplex.solana.com/',
+    endpoint: 'https://api.metaplex.solana.com',
     ChainId: ChainId.MainnetBeta,
   },
   {
@@ -88,8 +86,7 @@ const ConnectionContext = React.createContext<ConnectionConfig>({
 });
 
 export function ConnectionProvider({ children = undefined as any }) {
-  const searchParams = useQuerySearch();
-  const network = searchParams.get('network');
+  const network = 'mainnet-beta';
   const queryEndpoint =
     network && ENDPOINTS.find(({ name }) => name.startsWith(network))?.endpoint;
 
@@ -436,8 +433,8 @@ export const sendTransaction = async (
         message: 'Transaction failed...',
         description: (
           <>
-            {errors.map(err => (
-              <div>{err}</div>
+            {errors.map((err, i) => (
+              <div key={i}>{err}</div>
             ))}
             {/* <ExplorerLink address={txid} type="transaction" /> */}
           </>
