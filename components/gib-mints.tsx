@@ -9,7 +9,7 @@ const { TextArea } = Input;
 export const GibMints = ({ endpoint }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [jsonVal, setJsonVal] = useState(undefined);
+  const [jsonVal, setJsonVal] = useState<any>(undefined);
   const fetchMints = () => {
     notification.open({
       message: "Downloading your data.",

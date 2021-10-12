@@ -52,7 +52,7 @@ export default function GibNFT({ endpoint }) {
         symbol: meta.symbol || "",
         creators: meta.creators || [
           new Creator({
-            address: wallet.publicKey.toBase58(),
+            address: wallet!.publicKey!.toBase58(),
             share: 100,
             verified: true,
           }),

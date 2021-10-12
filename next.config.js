@@ -9,11 +9,14 @@ const withTM = require('next-transpile-modules')([
   "@solana/wallet-adapter-sollet",
   "@solana/wallet-adapter-solong",
   "@solana/wallet-adapter-torus",
-  "@project-serum/sol-wallet-adapter"
+  "@project-serum/sol-wallet-adapter",
 ]); 
 // pass the modules you would like to see transpiled
 module.exports = withTM({
   reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback.fs = false;

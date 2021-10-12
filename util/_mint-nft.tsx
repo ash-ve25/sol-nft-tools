@@ -342,46 +342,48 @@ export const mintNFT = async (
   return { metadataAccount };
 };
 
-export const sendNft = async ({
-  connection,
-  mintKey,
-  wallet,
-}: {
-  connection: Connection;
-  mintKey: string | PublicKey;
-  wallet: WalletContextState;
-}) => {
-  // const transferInstructions = [];
-  const tx = new Transaction()
-  const myToken = new Token(
-    connection,
-    toPublicKey(mintKey),
-    TOKEN_PROGRAM_ID,
-    undefined
-  );
+// export const sendNft = async ({
+//   connection,
+//   mintKey,
+//   wallet,
+// }: {
+//   connection: Connection;
+//   mintKey: string | PublicKey;
+//   wallet: WalletContextState;
+// }) => {
+//   // const transferInstructions = [];
+//   const tx = new Transaction()
+//   const myToken = new Token(
+//     connection,
+//     toPublicKey(mintKey),
+//     TOKEN_PROGRAM_ID,
+//     undefined
+//   );
 
-  const fromTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
-    wallet.publicKey
-  );
-  const toTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
-    toPublicKey("GoV8U9c4hjCjeosW1VKsDuRTfUe96sUPAC5RyUbstpUt")
-  );
+//   const fromTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
+//     wallet.publicKey
+//   );
+//   const toTokenAccount = await myToken.getOrCreateAssociatedAccountInfo(
+//     toPublicKey("GoV8U9c4hjCjeosW1VKsDuRTfUe96sUPAC5RyUbstpUt")
+//   );
 
-  tx.add(
-    Token.createTransferInstruction(
-      TOKEN_PROGRAM_ID,
-      fromTokenAccount.address,
-      toTokenAccount.address,
-      wallet.publicKey,
-      [],
-      1
-    )
-  );
+//   tx.add(
+//     Token.createTransferInstruction(
+//       TOKEN_PROGRAM_ID,
+//       fromTokenAccount.address,
+//       toTokenAccount.address,
+//       wallet.publicKey,
+//       [],
+//       1
+//     )
+//   );
 
-  wallet.signTransaction(tx);
-  const txId = await wallet.sendTransaction(tx, connection);
-  return txId;
-};
+//   wallet.signTransaction(tx);
+//   // const txId = await wallet.sendTransaction(tx, connection);
+//   // connection.sendTransaction()
+//   // wallet.wallet.a
+//   return txId;
+// };
 
 const AR_SOL_HOLDER_ID = new PublicKey(
   "HvwC9QSAzvGXhhVrgPmauVwFWcYZhne3hVot9EbHuFTm"

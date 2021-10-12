@@ -9,7 +9,7 @@ const { TextArea } = Input;
 
 export const GibMeta = ({ endpoint }) => {
   const [form] = Form.useForm();
-  const [jsonVal, setJsonVal] = useState(undefined);
+  const [jsonVal, setJsonVal] = useState<any>(undefined);
   const [loading, setLoading] = useState(false);
   const [counter, setCounter] = useState(0);
 

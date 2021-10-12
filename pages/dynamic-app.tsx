@@ -1,5 +1,7 @@
+import dynamic from "next/dynamic";
 import React from "react";
-import Providers from "../components/providers";
+
+const WrappedProviders = dynamic(() => import('../components/providers'), {ssr: false})
 
 function SafeHydrate({ children }) {
   return (
@@ -14,9 +16,9 @@ function SafeHydrate({ children }) {
 function MyApp({ Component, pageProps }) {
   return (
     <SafeHydrate>
-      <Providers>
+      <WrappedProviders>
         <Component {...pageProps} />
-      </Providers>
+      </WrappedProviders>
     </SafeHydrate>
   );
 }

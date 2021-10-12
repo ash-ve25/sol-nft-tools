@@ -10,7 +10,7 @@ export const GibHolders = ({ endpoint }) => {
   const [form] = Form.useForm();
   const [counter, setCounter] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [jsonVal, setJsonVal] = useState(undefined);
+  const [jsonVal, setJsonVal] = useState<any>(undefined);
 
   const fetchHolders = () => {
     notification.open({

@@ -10,7 +10,6 @@ import {
   getSolflareWallet,
   getSolletWallet,
   getSolongWallet,
-  getTorusWallet,
   WalletName,
 } from "@solana/wallet-adapter-wallets";
 import { Button } from "antd";
@@ -169,25 +168,8 @@ export const WalletModalProvider: FC<{ children: ReactNode }> = ({
   );
 };
 
-export const WalletProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const wallets = useMemo(
-    () => [
-      getPhantomWallet(),
-      getSolflareWallet(),
-      getTorusWallet({
-        options: {
-          // @FIXME: this should be changed for Metaplex, and by each Metaplex storefront
-          clientId:
-            "BOM5Cl7PXgE9Ylq1Z1tqzhpydY0RVr8k90QQ85N7AKI5QGSrr9iDC-3rvmy0K_hF0JfpLMiXoDhta68JwcxS1LQ",
-        },
-      }),
-      getLedgerWallet(),
-      getSolongWallet(),
-      getMathWallet(),
-      getSolletWallet(),
-    ],
-    []
-  );
+export const WalletProvider: FC<{ children: ReactNode, wallets: any[] }> = ({ children, wallets }) => {
+
 
   const onError = useCallback((error: WalletError) => {
     console.error(error);
