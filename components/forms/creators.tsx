@@ -2,7 +2,7 @@ import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Form, Input } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import React from "react";
-import { solAddresValidator } from "../../util/validators";
+import { solAddressValidator } from "../../util/validators";
 
 const formItemLayout = {
   labelCol: {
@@ -49,7 +49,7 @@ export function CreatorsForm({ creators }) {
                       {...field}
                       validateTrigger={["onBlur"]}
                       name={[index, "address"]}
-                      rules={[solAddresValidator]}
+                      rules={[solAddressValidator]}
                       noStyle
                       key={`share-${field.key}`}
                     >
