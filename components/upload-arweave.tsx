@@ -1,54 +1,14 @@
-import Arweave from "arweave";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { useCallback, useEffect, useState } from "react";
 import { Divider, Button, Card, notification, Spin } from "antd";
 import { FileUpload } from "./file-upload";
 import { DownloadOutlined } from "@ant-design/icons";
-import { download } from "../util/download";
+import { download } from "./util/download";
 import jsonFormat from "json-format";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import { fileToBuffer, generateArweaveWallet, getARInstance, getKeyForJwk, uploadToArweave } from "./util/arweave";
 
-export const arweave = Arweave.init({
-  host: "arweave.net",
-  port: 443,
-  protocol: "https",
-});
-
-const uploadToArweave = async (transaction) => {
-  const uploader = await arweave.transactions.getUploader(transaction);
-  while (!uploader.isComplete) {
-    await uploader.uploadChunk();
-    console.log(
-      `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`
-    );
-  }
-};
-
-const fileToBuffer = (
-  file: File
-): Promise<{ buffer: ArrayBuffer; file: File }> => {
-  return new Promise((resolve) => {
-    var reader = new FileReader();
-
-    reader.onload = function (readerEvt) {
-      var buffer = readerEvt.target.result;
-
-      resolve({
-        buffer: buffer as ArrayBuffer,
-        file,
-      });
-    };
-
-    reader.readAsArrayBuffer(file);
-  });
-};
-export const generateArweaveWallet = async () => {
-  const key = await arweave.wallets.generate();
-  localStorage.setItem("arweave-key", JSON.stringify(key));
-  return key;
-};
-
-export const getKeyForJwk = (jwk) => arweave.wallets.jwkToAddress(jwk);
+export const arweave = getARInstance();
 
 export default function ARUpload() {
   const [jwk, setJwk] = useState<JWKInterface>();
@@ -61,8 +21,8 @@ export default function ARUpload() {
     const generate = () =>
       generateArweaveWallet().then(async (jwk) => {
         setJwk(jwk);
-        const a = await getKeyForJwk(jwk);
-        setAddress(a);
+        const address = await getKeyForJwk(jwk);
+        setAddress(address);
       });
 
     const previousKey = localStorage.getItem("arweave-key");

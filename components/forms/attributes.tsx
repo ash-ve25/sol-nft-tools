@@ -2,7 +2,7 @@ import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import { Button, Form, Input } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import React from "react";
-import { solAddressValidator } from "../../util/validators";
+import { solAddressValidator } from "../util/validators";
 
 const formItemLayout = {
   labelCol: {

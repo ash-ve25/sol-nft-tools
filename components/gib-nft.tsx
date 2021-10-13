@@ -2,7 +2,7 @@ import { Button, Card, Divider, Form, Input } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 import { DownloadOutlined } from "@ant-design/icons";
-import { mintNFT } from "../util/mint-nft";
+import { mintNFT } from "./util/mint-nft";
 import { Avatar } from "./avatar";
 import { Attribute, Creator } from "../actions";
 import { useWallet } from "@solana/wallet-adapter-react";

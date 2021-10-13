@@ -90,7 +90,7 @@ export function ConnectionProvider({ children = undefined as any }) {
     localStorage.getItem("connectionEndpoint") || ENDPOINTS[0].endpoint
   );
   const endpoint = savedEndpoint;
-
+  
   const connection = useMemo(
     () => new Connection(endpoint, "recent"),
     [endpoint]

@@ -44,10 +44,16 @@ export function Menu() {
         </AntdMenu.Item>
         <AntdMenu.Item
           onClick={() => setRoute("nft")}
-          style={{ marginRight: "auto" }}
           key="nft"
         >
           Gib NFTs (Beta)
+        </AntdMenu.Item>
+        <AntdMenu.Item
+          onClick={() => setRoute("airdrop")}
+          style={{ marginRight: "auto" }}
+          key="airdrop"
+        >
+          Gib Airdrop
         </AntdMenu.Item>
       </AntdMenu>
 

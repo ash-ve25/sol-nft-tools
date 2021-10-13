@@ -1,9 +1,4 @@
-export const keyValidator = (setJsonVal) => ({
-  validator(_, value) {
-    setJsonVal(value);
-    return Promise.resolve(value);
-  },
-});
+
 
 export const jsonValidator = (setJsonVal) => () => ({
   validator(_, value) {
@@ -24,7 +19,7 @@ export const jsonValidator = (setJsonVal) => () => ({
 
 export const SOL_ADDRESS_REGEXP = /[1-9A-HJ-NP-Za-km-z]{32,44}/;
 
-export const solAddressValidator = () => ({
+export const solAddresValidator = () => ({
   validator(_, value) {
     const isValid = !!(value as string || '').match(SOL_ADDRESS_REGEXP)?.length;
     return isValid ? Promise.resolve() : Promise.reject(new Error('Invalid Address'));

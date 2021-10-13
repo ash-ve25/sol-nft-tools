@@ -3,12 +3,17 @@ import React from "react";
 import { GibHolders } from "../components/gib-holders";
 import { GibMints } from "../components/gib-mints";
 import { GibMeta } from "../components/gib-meta";
+import GibNft from '../components/gib-nft';
 import styles from "../styles/Home.module.css";
 import dynamic from "next/dynamic";
 import { useMenuState } from "../contexts/menu";
 
-const DynamicComponentWithNoSSR = dynamic(
+const GibNftNoSSR = dynamic(
   () => import("../components/gib-nft"),
+  { ssr: false }
+);
+const GibAirdropNoSSR = dynamic(
+  () => import("../components/gib-airdrop"),
   { ssr: false }
 );
 export default function Home() {
@@ -25,8 +30,6 @@ export default function Home() {
 
   const endpoint = "https://api.metaplex.solana.com";
 
-  console.log(selectedKeys);
-
   return (
     <div className={styles.container}>
       <main className={styles.main}>
@@ -37,7 +40,7 @@ export default function Home() {
           <Divider />
 
           {selectedKeys && selectedKeys[0] === "nft" && (
-            <DynamicComponentWithNoSSR endpoint={endpoint} />
+            <GibNftNoSSR endpoint={endpoint} />
           )}
           {selectedKeys && selectedKeys[0] === "meta" && (
             <GibMeta endpoint={endpoint} />
@@ -47,6 +50,9 @@ export default function Home() {
           )}
           {selectedKeys && selectedKeys[0] === "mints" && (
             <GibMints endpoint={endpoint} />
+          )}
+          {selectedKeys && selectedKeys[0] === "airdrop" && (
+            <GibAirdropNoSSR endpoint={endpoint} />
           )}
         </div>
       </main>

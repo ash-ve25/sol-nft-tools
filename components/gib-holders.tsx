@@ -1,9 +1,9 @@
 import { Button, Divider, Form, Input, notification } from "antd";
 import React, { useState } from "react";
-import { jsonValidator } from "../util/validators";
+import { jsonValidator } from "./util/validators";
 import styles from "../styles/Home.module.css";
 import { DownloadOutlined } from "@ant-design/icons";
-import { getHolders } from "../util/get-holders";
+import { getHolders } from "./util/get-holders";
 const { TextArea } = Input;
 
 export const GibHolders = ({ endpoint }) => {
