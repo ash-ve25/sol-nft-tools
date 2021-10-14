@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import { DownloadOutlined } from "@ant-design/icons";
 import { Divider, Form, Button, Input, notification } from "antd";
 import { getMints } from "./util/get-mints";
-import { solAddressValidator } from "../util/validators";
+import { solAddressValidator } from "./util/validators";
+// import { solAddressValidator } from "./util/validators";
 
 const { TextArea } = Input;
 export const GibMints = ({ endpoint }) => {

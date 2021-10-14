@@ -50,7 +50,7 @@ export const ENDPOINTS = [
   },
   {
     name: "mainnet-beta (Serum)" as ENV,
-    endpoint: "https://solana-api.projectserum.com/",
+    endpoint: "https://solana-api.projectserum.com",
     ChainId: ChainId.MainnetBeta,
   },
   {

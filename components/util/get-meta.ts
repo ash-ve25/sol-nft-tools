@@ -289,7 +289,7 @@ const createJsonObject =
       url
     );
     const arweaveData = await fetch(tokenMetadata.data.uri).then((res) =>
-      res.json()
+      res.json().catch()
     );
     mints.push({
       tokenData: {
