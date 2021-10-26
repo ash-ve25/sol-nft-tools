@@ -143,6 +143,15 @@ export default function GibAirdrop({ endpoint }) {
           });
           setCreator(c);
         }
+      } else {
+        const keypair = new Keypair();
+        const wallet = new Wallet(keypair);
+        const c = new Creator({
+          address: wallet.publicKey.toBase58(),
+          share: 100,
+          verified: 1,
+        });
+        setCreator(c);
       }
     } catch (e) {
       notification.open({
