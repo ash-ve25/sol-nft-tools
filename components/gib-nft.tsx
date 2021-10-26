@@ -2,7 +2,7 @@ import { Button, Card, Divider, Form, Input } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 import { DownloadOutlined } from "@ant-design/icons";
-import { mintNFT } from "./util/mint-nft";
+// import { mintNFT } from "./util/mint-nft";
 import { Avatar } from "./avatar";
 import { Attribute, Creator } from "../actions";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -42,39 +42,39 @@ export default function GibNFT({ endpoint }) {
 
   const mint = useCallback(async () => {
     const { files, ...meta } = form.getFieldsValue();
-    const res = await mintNFT(
-      connection,
-      wallet,
-      endpoint,
-      files,
-      {
-        name: meta.name || "",
-        symbol: meta.symbol || "",
-        creators: meta.creators || [
-          new Creator({
-            address: wallet!.publicKey!.toBase58(),
-            share: 100,
-            verified: true,
-          }),
-        ],
-        animation_url: meta.animation_url || "",
-        description: meta.description || "",
-        image: (files as File[])[0].name,
-        attributes: fields[0].value as Attribute[],
-        external_url: meta.external_url || [],
-        properties: {
-          files: [
-            {
-              uri: (files as File[])[0].name,
-              type: (files as File[])[0].type,
-            },
-          ],
-        },
-        sellerFeeBasisPoints: meta.sellerFeeBasisPoints || 0,
-      },
-      setNFTcreateProgress,
-      1
-    );
+    // const res = await mintNFT(
+    //   connection,
+    //   wallet,
+    //   endpoint,
+    //   files,
+    //   {
+    //     name: meta.name || "",
+    //     symbol: meta.symbol || "",
+    //     creators: meta.creators || [
+    //       new Creator({
+    //         address: wallet!.publicKey!.toBase58(),
+    //         share: 100,
+    //         verified: true,
+    //       }),
+    //     ],
+    //     animation_url: meta.animation_url || "",
+    //     description: meta.description || "",
+    //     image: (files as File[])[0].name,
+    //     attributes: fields[0].value as Attribute[],
+    //     external_url: meta.external_url || [],
+    //     properties: {
+    //       files: [
+    //         {
+    //           uri: (files as File[])[0].name,
+    //           type: (files as File[])[0].type,
+    //         },
+    //       ],
+    //     },
+    //     sellerFeeBasisPoints: meta.sellerFeeBasisPoints || 0,
+    //   },
+    //   setNFTcreateProgress,
+    //   1
+    // );
     setLoading(false);
     setNFTcreateProgress(0);
   }, [connection, endpoint, fields, form, wallet]);

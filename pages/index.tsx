@@ -56,7 +56,7 @@ export default function Home() {
           )}
         </div>
       </main>
-      <footer className={styles.footer}>
+      {/* <footer className={styles.footer}>
         <span style={{ width: "100%" }}>
           <span>
             Made by
@@ -119,7 +119,7 @@ export default function Home() {
             DSmbnj9t7CCQdAZfvYe3PNbJB7CrVXpa29iW3VkgpEEZ
           </span>
         </span>
-      </footer>
+      </footer> */}
     </div>
   );
 }

@@ -274,7 +274,7 @@ export class Metadata {
   }
 }
 
-class CreateMetadataArgs {
+export class CreateMetadataArgs {
   instruction: number = 0;
   data: Data;
   isMutable: boolean;
@@ -572,7 +572,8 @@ export async function createMetadata(
   )[0];
   console.log('Data', data);
   const value = new CreateMetadataArgs({ data, isMutable: true });
-  console.log({ value })
+  console.log({ value });
+  debugger
   const txnData = Buffer.from(serialize(METADATA_SCHEMA, value));
 
   const keys = [
