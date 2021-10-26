@@ -197,11 +197,11 @@ export default function ARUpload() {
         <>
           <br />
           <Button
-            type="primary"
             loading={loading}
-            shape="round"
             disabled={!files.length}
             icon={<DownloadOutlined />}
+            type="primary"
+            shape="round"
             size="large"
             style={{ margin: "0 auto", display: "block" }}
             onClick={upload}
