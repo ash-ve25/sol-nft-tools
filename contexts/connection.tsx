@@ -87,8 +87,7 @@ const ConnectionContext = React.createContext<ConnectionConfig>({
 
 export function ConnectionProvider({ children = undefined as any }) {
   const [savedEndpoint, setEndpoint] = useState(
-    // ENDPOINTS[0].endpoint
-    clusterApiUrl("devnet")
+    ENDPOINTS[0].endpoint
   );
   const endpoint = savedEndpoint;
   
