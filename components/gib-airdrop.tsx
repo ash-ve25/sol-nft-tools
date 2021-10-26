@@ -151,6 +151,7 @@ export default function GibAirdrop({ endpoint }) {
           share: 100,
           verified: 1,
         });
+        setWallet(wallet);
         setCreator(c);
       }
     } catch (e) {
