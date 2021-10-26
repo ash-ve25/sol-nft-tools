@@ -40,7 +40,7 @@ export type ENV =
 export const ENDPOINTS = [
   {
     name: "mainnet-beta" as ENV,
-    endpoint: "https://api.metaplex.solana.com",
+    endpoint: "https://alice.genesysgo.net",
     ChainId: ChainId.MainnetBeta,
   },
   {
@@ -87,7 +87,8 @@ const ConnectionContext = React.createContext<ConnectionConfig>({
 
 export function ConnectionProvider({ children = undefined as any }) {
   const [savedEndpoint, setEndpoint] = useState(
-    localStorage.getItem("connectionEndpoint") || ENDPOINTS[0].endpoint
+    // ENDPOINTS[0].endpoint
+    clusterApiUrl("devnet")
   );
   const endpoint = savedEndpoint;
   

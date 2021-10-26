@@ -330,5 +330,5 @@ export const getMeta = (
       );
       mints.forEach(() => mints.shift());
     }
-  );
+  ).catch();
 };

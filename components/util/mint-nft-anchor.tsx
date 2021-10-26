@@ -82,6 +82,7 @@ export const mintNFT = async (
   maxSupply?: number,
 ): Promise<{
   metadataAccount: StringPublicKey;
+  mintKey: StringPublicKey;
 } | void> => {
   if (!wallet?.publicKey) return;
 
@@ -319,16 +320,9 @@ export const mintNFT = async (
       ),
       type: 'success',
     });
-
-    // TODO: refund funds
-
-    // send transfer back to user
   }
-  // TODO:
-  // 1. Jordan: --- upload file and metadata to storage API
-  // 2. pay for storage by hashing files and attaching memo for each file
 
-  return { metadataAccount };
+  return { metadataAccount, mintKey };
 };
 
 export const prepPayForFilesTxn = async (
@@ -349,8 +343,7 @@ export const prepPayForFilesTxn = async (
       SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: AR_SOL_HOLDER_ID,
-        lamports: 2300 // 0.0023 SOL per file (paid to arweave)
-          // await getAssetCostToStore(files),
+        lamports: 10
       }),
     );
 

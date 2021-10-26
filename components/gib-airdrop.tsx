@@ -9,14 +9,22 @@ import { useConnection } from "../contexts/connection";
 import { AttributesForm, FieldData } from "./forms/attributes";
 import { Wallet } from "@project-serum/anchor";
 import jsonFormat from "json-format";
-import { fileToBuffer, generateArweaveWallet, getARInstance, getKeyForJwk, uploadToArweave } from "./util/arweave";
+import {
+  fileToBuffer,
+  generateArweaveWallet,
+  getARInstance,
+  getKeyForJwk,
+  uploadToArweave,
+} from "./util/arweave";
 import { download } from "./util/download";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { FileUpload } from "./file-upload";
 import { JWKInterface } from "arweave/node/lib/wallet";
+import { Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { jsonValidator } from "./util/validators";
+import { mintAndSend } from "./util/mint-nft";
 
 const arweave = getARInstance();
-
 
 const formItemLayout = {
   labelCol: {
@@ -48,10 +56,100 @@ export default function GibAirdrop({ endpoint }) {
   const labelCol = { span: 5 };
   const [, forceUpdate] = useState({});
   const [fields, setFields] = useState<FieldData[]>([]);
-  const [address, setAddress] = useState<string>();
+  const [arweaveAddress, setArweaveAddress] = useState<string>();
   const [balance, setBalance] = useState("none");
   const [files, setFiles] = useState([]);
-  
+  const [privkey, setPrivkey] = useState();
+  const [jwk, setJwk] = useState<JWKInterface>();
+  const [solBalance, setSolBalance] = useState<number | 'none'>('none');
+  const [arData, setArData] = useState<any>('YjHeQxupl2ezEiGvu3BzXWPDiQBI-eAnGDboMo6UCwQ');
+  const [recipients, setRecipients] = useState([]);
+
+  const handleSetPrivkey = useCallback(() => {
+    localStorage.setItem("airdrop-privkey", loginForm.getFieldsValue().privkey);
+    const parsed = JSON.parse(loginForm.getFieldsValue().privkey);
+    const wallet = new Wallet(parsed);
+    setWallet(wallet);
+  }, [loginForm]);
+
+  const generate = () =>
+    generateArweaveWallet().then(async (jwk) => {
+      setJwk(jwk);
+      const a = await getKeyForJwk(jwk);
+      setArweaveAddress(a);
+    });
+
+  useEffect(() => {
+    const previousKey = localStorage.getItem("arweave-key");
+    if (previousKey) {
+      if (!arweaveAddress) {
+        try {
+          const k = JSON.parse(previousKey);
+          setJwk(k);
+          getKeyForJwk(k).then((a) => {
+            setArweaveAddress(a);
+          });
+        } catch (e) {
+          console.log(e);
+          generate();
+        }
+      }
+    }
+  }, [arweaveAddress, jwk]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (arweaveAddress) {
+        const balance = await arweave.wallets.getBalance(arweaveAddress);
+        setBalance(arweave.ar.winstonToAr(balance));
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [arweaveAddress, balance]);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (arweaveAddress) {
+        const b = await arweave.wallets.getBalance(arweaveAddress);
+        setBalance(arweave.ar.winstonToAr(b));
+      }
+      if (wallet?.publicKey) {
+        connection.getBalance(wallet?.publicKey).then((b) => setSolBalance(b))
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [arweaveAddress, balance, connection, wallet?.publicKey]);
+
+  useEffect(() => {
+    try {
+      const previousKey = localStorage.getItem("airdrop-privkey");
+      if (previousKey) {
+        const parsed = JSON.parse(previousKey);
+        const keypair = Keypair.fromSecretKey(new Uint8Array(parsed));
+        const { publicKey } = keypair;
+        setWallet(new Wallet(keypair));
+        const pubkeyAsString = publicKey.toBase58();
+        connection.getBalance(publicKey).then((b) => setSolBalance(b));
+        if (pubkeyAsString && !creator) {
+          const c = new Creator({
+            address: pubkeyAsString,
+            share: 100,
+            verified: true,
+          });
+          setCreator(c);
+        }
+      }
+    } catch (e) {
+      notification.open({
+        message: `Could not retrieve previous privkey: ${e}`,
+      });
+    }
+  }, [connection, creator]);
+
+
+  // wallet.signTransaction
   const mint = useCallback(async () => {
     const { files: _files, ...meta } = form.getFieldsValue();
     const res = await mintNFT(
@@ -94,65 +192,90 @@ export default function GibAirdrop({ endpoint }) {
   const setFile = (file) => {
     form.setFields([{ name: "files", value: [file] }]);
   };
-  const [jwk, setJwk] = useState<JWKInterface>();
 
-  useEffect(() => {
-    if (wallet?.publicKey && !creator) {
-      const c = new Creator({
-        address: wallet.publicKey.toBase58(),
-        share: 100,
-        verified: true,
-      });
-      setCreator(c);
-    }
-  }, [creator, wallet?.publicKey, form]);
+  // const pubkeyAsString = wallet && wallet?.publicKey && wallet?.publicKey?.toBase58();
+  // useEffect(() => {
+  //   if (pubkeyAsString && !creator) {
+  //     const c = new Creator({
+  //       address: pubkeyAsString,
+  //       share: 100,
+  //       verified: true,
+  //     });
+  //     setCreator(c);
+  //   }
+  // }, [creator, pubkeyAsString, form]);
 
   // To disable submit button at the beginning.
   useEffect(() => {
     forceUpdate({});
   }, [form]);
 
-  const upload = async () => {
+  const upload = useCallback(async () => {
     setLoading(true);
     const { files, ...meta } = form.getFieldsValue();
-    
+
     const res = await Promise.all(
       (files as File[]).map(async (f) => {
-        const transaction = await arweave.createTransaction(
-          { data: await fileToBuffer(f) },
+        const m = Object.assign({
+          name: meta.name,
+          symbol: meta.symbol || null,
+          description: meta.description || null,
+          seller_fee_basis_points: meta.sellerFeeBasisPoints || null,
+          image: meta.image || null,
+          animation_url: meta.animation_url || null,
+          attributes: meta.attributes || null,
+          external_url: meta.external_url || null,
+          properties: {
+            ...meta.properties,
+            creators: new Creator({ 
+              address: wallet?.publicKey.toBase58(),
+              share: 100,
+              verified: true 
+            }),
+          },
+        });
+        const imgTx = await arweave.createTransaction(
+          { data: await (await fileToBuffer(f)).buffer },
           jwk
         );
-        transaction.addTag("Content-Type", f.type);
-        await arweave.transactions.sign(transaction, jwk);
-        await uploadToArweave(transaction);
-        return {
-          link: `https://arweave.net/${transaction.id}`,
-          name: f.name,
-        };
+        imgTx.addTag("Content-Type", f.type);
+        await arweave.transactions.sign(imgTx, jwk);
+        await uploadToArweave(imgTx);
+        const imgLink =  `https://arweave.net/${imgTx.id}`;
+        m.image =  imgLink;
+        m.properties.files = [{ type: f.type, uri: imgLink }]
+        const metaTx =  await arweave.createTransaction(
+          { data: JSON.stringify({...m}) },
+          jwk
+        );
+        metaTx.addTag("Content-Type", 'application/json');
+        await arweave.transactions.sign(metaTx, jwk);
+        await uploadToArweave(metaTx);
+
+        return metaTx.id;
       })
     );
 
+    setArData(res[0]);
     setLoading(false);
-    download(`AR-upload-${Date.now()}.json`, jsonFormat(res));
-  };
-
+  }, [form, jwk, wallet?.publicKey]);
 
   useEffect(() => {
     const generate = () =>
       generateArweaveWallet().then(async (jwk) => {
         setJwk(jwk);
         const address = await getKeyForJwk(jwk);
-        setAddress(address);
+        setArweaveAddress(address);
       });
 
     const previousKey = localStorage.getItem("arweave-key");
     if (previousKey) {
-      if (!address) {
+      if (!arweaveAddress) {
         try {
           const k = JSON.parse(previousKey);
           setJwk(k);
           getKeyForJwk(k).then((address) => {
-            setAddress(address);
+            setArweaveAddress(address);
           });
         } catch (e) {
           console.log(e);
@@ -162,18 +285,18 @@ export default function GibAirdrop({ endpoint }) {
     } else {
       generate();
     }
-  }, [address, jwk]);
+  }, [arweaveAddress, jwk]);
 
-  useEffect(() => {
-    try {
-      const previousKey = localStorage.getItem('airdrop-privkey');
-      const parsed = JSON.parse(previousKey);
-      const wallet = new Wallet(parsed);
-      setWallet(wallet);
-    } catch (e) {
-      notification.open({message: `Could not retrieve previous privkey: ${JSON.stringify(e)}`})
-    }
-  }, [form]);
+  const handleSned = useCallback(async () => {
+   const txid =  await mintAndSend({
+      connection,
+      wallet,
+      publicKey: 'FTwADibN8jnndAFM7iJDksYqfioPBEXBUxoZRJfSi5KQ'
+    });
+
+    debugger
+
+  }, [connection, wallet]);
 
   const handleFields = useCallback((attrs) => {
     console.log(attrs);
@@ -185,32 +308,105 @@ export default function GibAirdrop({ endpoint }) {
     setFiles(loaded);
   };
 
+  const downloadSolKey = useCallback(() => {
+    const cachedKey = localStorage.getItem("airdrop-privkey");
+    if (!cachedKey) {
+      return;
+    }
+    download(`SOL-${wallet?.publicKey.toBase58()}.json`, cachedKey);
+  }, [wallet?.publicKey]);
+
+  const handleDownloadARKey = useCallback(() => {
+    if (!jwk) {
+      return;
+    }
+    download(`AR-${arweaveAddress}.json`, jsonFormat(jwk));
+  }, [arweaveAddress, jwk]);
+
+  const clipboardNotification = useCallback(() => {
+    notification.open({ message: "Copied to clipboard!" });
+  }, []);
+
   return (
     <>
-      <p>
-        Gib-NFT serves one purpose: To gib you NFT. It will generate an NFT from
-        your metadata.
-      </p>
       <Divider />
+
+      {wallet && (
+        <Card
+          extra={
+            !privkey && (
+              <>
+                <CopyToClipboard
+                  text={wallet?.publicKey.toBase58()}
+                  onCopy={clipboardNotification}
+                >
+                  <a style={{ marginRight: "1rem" }}>Copy Address</a>
+                </CopyToClipboard>
+                <a onClick={downloadSolKey}>Download Wallet</a>
+              </>
+            )
+          }
+          title="SOL Wallet"
+        >
+          <p>Address: {wallet?.publicKey.toBase58()}</p>
+          <p>
+            Balance:{" "}
+            {solBalance === "none" ? (
+              <Spin style={{ marginLeft: "1rem" }} />
+            ) : (
+              solBalance / LAMPORTS_PER_SOL
+            )}
+          </p>
+        </Card>
+      )}
+
+      <Card
+        extra={
+          <>
+            <CopyToClipboard
+              text={arweaveAddress}
+              onCopy={clipboardNotification}
+            >
+              <a style={{ marginRight: "1rem" }}>Copy Address</a>
+            </CopyToClipboard>
+            <a onClick={handleDownloadARKey}>Download Wallet</a>
+          </>
+        }
+        title="AR Wallet"
+      >
+        <p>Address: {arweaveAddress}</p>
+        <p>
+          Balance:{" "}
+          {balance === "none" ? (
+            <Spin style={{ marginLeft: "1rem" }} />
+          ) : (
+            balance
+          )}
+        </p>
+      </Card>
       <Card>
         {!wallet && (
           <div>
-            <h2 style={{ textAlign: "center" }}>Please login with private key to begin</h2>
+            <h2 style={{ textAlign: "center" }}>
+              Please login with private key to begin
+            </h2>
 
             <Form form={loginForm}>
-              <Form.Item name="privkey" rules={[{required: true, message: 'Please enter private key'}]}>
+              <Form.Item
+                name="privkey"
+                rules={[
+                  { required: true, message: "Please enter private key" },
+                ]}
+              >
                 <Input />
               </Form.Item>
-              <Form.Item style={{textAlign: 'center'}}>
-                <Button onClick={() => {
-                  localStorage.setItem('airdrop-privkey', JSON.stringify(loginForm.getFieldsValue().privkey))
-                }}>Connect</Button>
+              <Form.Item style={{ textAlign: "center" }}>
+                <Button onClick={handleSetPrivkey}>Connect</Button>
               </Form.Item>
             </Form>
           </div>
-          // </div>
         )}
-        {wallet && (
+        {wallet && !arData && (
           <>
             <Form
               form={form}
@@ -252,38 +448,6 @@ export default function GibAirdrop({ endpoint }) {
               </Form.Item>
             </Form>
 
-            <Card
-          extra={
-            <>
-              <CopyToClipboard
-                text={address}
-                onCopy={() =>
-                  notification.open({ message: "Copied to clipboard!" })
-                }
-              >
-                <a style={{ marginRight: "1rem" }}>Copy Address</a>
-              </CopyToClipboard>
-              <a
-                onClick={() => download(`AR-${address}.json`, jsonFormat(jwk))}
-              >
-                Download Wallet
-              </a>
-            </>
-          }
-          title="Wallet"
-        >
-          <p>Address: {address}</p>
-          <p>
-            Balance:{" "}
-            {balance === "none" ? (
-              <Spin style={{ marginLeft: "1rem" }} />
-            ) : (
-              balance
-            )}
-          </p>
-          <Divider />
-          <FileUpload setFiles={handleFiles} />
-        </Card>
             {wallet && (
               <Button
                 type="primary"
@@ -292,13 +456,33 @@ export default function GibAirdrop({ endpoint }) {
                 icon={<DownloadOutlined />}
                 size="large"
                 className={`${styles["d-block"]} ${styles["m-0-auto"]}`}
-                onClick={() => {}}
+                onClick={upload}
                 style={{ marginTop: "2rem" }}
               >
                 Upload
               </Button>
             )}
           </>
+        )}
+
+        {wallet && arData && (
+         <>
+          <h2>Step 2: Sned</h2>
+          <p>
+            AR Link: {arData}
+          </p>
+
+          <div>Gib list with all addresses</div>
+          <Form.Item name="mintIds" rules={[jsonValidator(setRecipients)]}>
+          <Input.TextArea
+              rows={4}
+              className={`${styles.card} ${styles["full-width"]}`}
+            />
+          </Form.Item>
+          <Form.Item style={{ textAlign: "center" }}>
+            <Button onClick={handleSned}>Connect</Button>
+          </Form.Item>
+         </>
         )}
       </Card>
     </>
