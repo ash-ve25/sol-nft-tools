@@ -101,7 +101,7 @@ export const AttributesForm: React.FC<CustomizedFormProps> = ({
                   </Form.Item>
                 </>
               ))}
-              <Form.Item wrapperCol={{ sm: { span: 14, offset: 5 } }}>
+              {/* <Form.Item wrapperCol={{ sm: { span: 14, offset: 5 } }}>
                 <Button
                   type="dashed"
                   onClick={() => add({ trait_type: "", value: "" })}
@@ -111,7 +111,7 @@ export const AttributesForm: React.FC<CustomizedFormProps> = ({
                   Add Attribute
                 </Button>
                 <Form.ErrorList errors={errors} />
-              </Form.Item>
+              </Form.Item> */}
             </>
           );
         }}
