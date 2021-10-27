@@ -126,15 +126,21 @@ export default function GibAirdrop({ endpoint }) {
   }, [arweaveAddress, balance, connection, wallet?.publicKey]);
 
   useEffect(() => {
+    if (wallet?.publicKey) {
+      connection.getBalance(wallet?.publicKey).then((b) => setSolBalance(b));
+    }
+  }, [wallet?.publicKey])
+
+  useEffect(() => {
+    debugger
     try {
       const previousKey = localStorage.getItem("airdrop-privkey");
+      if (!connection) {return}
       if (previousKey) {
         const parsed = JSON.parse(previousKey);
         const keypair = Keypair.fromSecretKey(new Uint8Array(parsed));
         const { publicKey } = keypair;
-        setWallet(new Wallet(keypair));
         const pubkeyAsString = publicKey.toBase58();
-        connection.getBalance(publicKey).then((b) => setSolBalance(b));
         if (pubkeyAsString && !creator) {
           const c = new Creator({
             address: pubkeyAsString,
@@ -142,6 +148,7 @@ export default function GibAirdrop({ endpoint }) {
             verified: 1,
           });
           setCreator(c);
+          setWallet(new Wallet(keypair));
         }
       } else {
         const keypair = new Keypair();
@@ -160,7 +167,7 @@ export default function GibAirdrop({ endpoint }) {
         message: `Could not retrieve previous privkey: ${e}`,
       });
     }
-  }, [connection, creator, wallet]);
+  }, [creator, wallet?.publicKey, balance]);
 
   const mint = useCallback(async () => {
     setLoading(true);
